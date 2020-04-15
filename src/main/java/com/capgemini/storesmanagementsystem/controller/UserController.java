@@ -1,43 +1,75 @@
 package com.capgemini.storesmanagementsystem.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capgemini.storesmanagementsystem.dto.CartInfoBean;
+import com.capgemini.storesmanagementsystem.dto.OrderDetails;
 import com.capgemini.storesmanagementsystem.dto.ResponseClass;
 import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
+import com.capgemini.storesmanagementsystem.exceptions.EmailAlreadyExistsException;
+import com.capgemini.storesmanagementsystem.exceptions.MobileNumberAlreadyExistsException;
 import com.capgemini.storesmanagementsystem.service.UserService;
 
+
 @RestController
-@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*")
+@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*",exposedHeaders="Access-Control-Allow-Origin")
 public class UserController {
 	
 	@Autowired
 	private UserService service;
 	
-	@PostMapping(path = "register",produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/basicauth", produces = MediaType.APPLICATION_JSON_VALUE) 
+	public ResponseClass basicAuth() {
+		ResponseClass resp = new ResponseClass();
+		resp.setStatusCode(201);
+		resp.setMessage("You are authenticated");
+		return resp;
+	}
+	
+	@PostMapping(path = "/register",produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass register(@RequestBody UserInfoBean user) {
 		ResponseClass resp = new ResponseClass();
-		if(service.register(user)) {
+		
+		try {
+		boolean result = service.register(user);
+		if(result) {
 			resp.setStatusCode(201);
 			resp.setMessage("Success");
 			resp.setDescription("Registered Successfully");
 			resp.setUser(user);
 			return resp;
-		} else {
+		}
+		} catch (EmailAlreadyExistsException exp) {
+			resp.setStatusCode(407);
+			resp.setMessage("Failed");
+			resp.setDescription(exp.getMessage());
+			return resp;
+		} catch (MobileNumberAlreadyExistsException exp) {
+			resp.setStatusCode(408);
+			resp.setMessage("Failed");
+			resp.setDescription(exp.getMessage());
+			return resp;
+		} catch (Exception exp) {
 			resp.setStatusCode(401);
 			resp.setMessage("Failed");
 			resp.setDescription("Registration Unsuccessfull");
 			return resp;
 		}
+		return resp;
 	}
 	
 	
-	@PutMapping(path = "update",produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(path = "/update",produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass update(@RequestBody UserInfoBean user) {
 		ResponseClass resp = new ResponseClass();
 		if(service.update(user)) {
@@ -54,21 +86,86 @@ public class UserController {
 		}
 	}
 	
-	
-	@PostMapping(path = "login",produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseClass login(@RequestBody UserInfoBean user) {
+	@GetMapping(path = "/deliveredOn",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass deliveredOn(@RequestParam("orderId")int orderId, @RequestParam("deliveredOn")String deliveredOn) {
 		ResponseClass resp = new ResponseClass();
-		UserInfoBean bean = service.login(user);
-		if(bean!=null) {
+		if(service.setDeliveredDate(orderId,deliveredOn)) {
 			resp.setStatusCode(201);
 			resp.setMessage("Success");
-			resp.setDescription("Login Successfull");
-			resp.setUser(bean);
+			resp.setDescription("Updation Successfull");
 			return resp;
 		} else {
 			resp.setStatusCode(401);
 			resp.setMessage("Failed");
-			resp.setDescription("Login UnSuccessfull");
+			resp.setDescription("Not a valid date");
+			return resp;
+		}
+	}
+	
+	@GetMapping(path = "/getMyOrders",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass getOrder(@RequestParam("userId")int userId ) {
+		ResponseClass resp = new ResponseClass();
+		List<OrderDetails> order = service.getOrders(userId);
+		if(order!=null) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Order Found");
+			resp.setOrders(order);
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Order Not Found");
+			return resp;
+		}
+	}
+	
+	@PostMapping(path = "/addtocart", produces =  MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass addToCart(@RequestBody UserInfoBean bean) {
+		ResponseClass resp = new ResponseClass();
+		if(service.addToCart(bean)) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Added to cart");
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Failed adding to cart");
+			return resp;
+		}
+	}
+	
+	@GetMapping(path = "/getItems",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass getCartItems(@RequestParam("userId")int userId ) {
+		ResponseClass resp = new ResponseClass();
+		List<CartInfoBean> items = service.getCartItems(userId);
+		if(items!=null) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Items Found");
+			resp.setItems(items);
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Items Not Found");
+			return resp;
+		}
+	}
+	
+	@GetMapping(path="/remItem",produces= MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass removeItem(@RequestParam("itemId")int itemId ) {
+		ResponseClass resp = new ResponseClass();
+		if(service.removeCartItem(itemId)) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Item deleted");
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Item Not deleted");
 			return resp;
 		}
 	}

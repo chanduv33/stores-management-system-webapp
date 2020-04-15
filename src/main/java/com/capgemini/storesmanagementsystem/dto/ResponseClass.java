@@ -20,4 +20,5 @@ public class ResponseClass {
 	private UserInfoBean user;
 	private DealerProductInfoBean dealerProd;
 	private List<DealerProductInfoBean> dealerProds;
+	private List<CartInfoBean> items;
 }

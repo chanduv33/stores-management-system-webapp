@@ -1,5 +1,7 @@
 package com.capgemini.storesmanagementsystem.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,20 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capgemini.storesmanagementsystem.dto.DealerProductInfoBean;
 import com.capgemini.storesmanagementsystem.dto.OrderDetails;
 import com.capgemini.storesmanagementsystem.dto.ResponseClass;
 import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
 import com.capgemini.storesmanagementsystem.service.CustomerService;
 
 @RestController
-@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*")
+@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*",exposedHeaders="Access-Control-Allow-Origin")
 public class CustomerController {
 
 	@Autowired
 	private CustomerService service;
 	
 
-	@PostMapping(path = "buyProduct",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/buyProduct",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass buyProduct(@RequestBody UserInfoBean bean) {
 		ResponseClass resp = new ResponseClass();
 		OrderDetails order = service.buyProduct(bean);
@@ -41,23 +44,7 @@ public class CustomerController {
 		}
 	}
 	
-	@PostMapping(path = "deliveredDate",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseClass setDeliveredDate(@RequestBody OrderDetails bean) {
-		ResponseClass resp = new ResponseClass();
-		if(service.setDeliveredDate(bean)) {
-			resp.setStatusCode(201);
-			resp.setMessage("Success");
-			resp.setDescription("Updation Successfull");
-			return resp;
-		} else {
-			resp.setStatusCode(401);
-			resp.setMessage("Failed");
-			resp.setDescription("Updation Product Failed");
-			return resp;
-		}
-	}
-	
-	@GetMapping(path = "getOrder",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/getOrder",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass getOrder(@RequestParam("orderId")int orderId ) {
 		ResponseClass resp = new ResponseClass();
 		OrderDetails order = service.getOrderDetails(orderId);
@@ -75,5 +62,22 @@ public class CustomerController {
 		}
 	}
 	
+	@GetMapping(path = "/getDealerProds",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass getManufacturersProducts() {
+		ResponseClass resp = new ResponseClass();
+		List<DealerProductInfoBean> products = service.getProds();
+		if(products!=null) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Products Found");
+			resp.setDealerProds(products);
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Products Not Found");
+			return resp;
+		}
+	}
 	
 }

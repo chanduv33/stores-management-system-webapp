@@ -21,11 +21,6 @@ public class AdminServiceImplementation implements AdminService{
 	}
 
 	@Override
-	public UserInfoBean getManufacturerDetails(int id) {
-		return dao.getManufacturerDetails(id);
-	}
-
-	@Override
 	public List<UserInfoBean> getAllManufacturersDetails() {
 		return dao.getAllManufacturersDetails();
 	}
@@ -33,5 +28,10 @@ public class AdminServiceImplementation implements AdminService{
 	@Override
 	public boolean removeManufacturer(int userId) {
 		return dao.removeManufacturer(userId);
+	}
+
+	@Override
+	public boolean addManufacturer(UserInfoBean manufacturer) {
+		return dao.addManufacturer(manufacturer);
 	}
 }

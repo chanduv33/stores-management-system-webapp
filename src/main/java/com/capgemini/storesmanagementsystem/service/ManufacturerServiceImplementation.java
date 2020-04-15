@@ -16,25 +16,11 @@ public class ManufacturerServiceImplementation implements ManufacturerService {
 	@Autowired
 	private ManufacturerDAO dao;
 
-	/*
-	 * @Override public boolean checkNameAvailability(String name) { return
-	 * dao.checkNameAvailability(name); }
-	 */
-
 	@Override
 	public boolean setCostPrice(ProductInfoBean bean) {
 		return dao.setCostPrice(bean);
 	}
 
-	@Override
-	public OrderDetails getPaymentDetails(OrderDetails order) {
-		return dao.getPaymentDetails(order);
-	}
-
-	/*
-	 * @Override public ManufacturerInfoBean login(ManufacturerInfoBean bean) {
-	 * return dao.login(bean); }
-	 */
 
 	@Override
 	public boolean addProduct(UserInfoBean manufacturer) {
@@ -50,6 +36,25 @@ public class ManufacturerServiceImplementation implements ManufacturerService {
 	public boolean updateProduct(ProductInfoBean bean) {
 		// TODO Auto-generated method stub
 		return dao.updateProduct(bean);
+	}
+
+
+
+	@Override
+	public List<OrderDetails> getPaymentDetails(int userId) {
+		return dao.getPaymentDetails(userId);
+	}
+
+
+	@Override
+	public boolean removeProduct(int productId) {
+		return dao.removeProduct(productId);
+	}
+
+
+	@Override
+	public boolean changeStatus(OrderDetails order) {
+		return dao.changeStatus(order);
 	}
 
 	

@@ -9,13 +9,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString.Exclude;
 
 @Data
 @Entity
@@ -28,13 +28,13 @@ public class UserInfoBean {
 	private int userId;
 	
 	@Column
-	private String userName;
+	private String name;
 	
 	@Column
 	private String role;
 	
 	@Column
-	private String email;
+	private String username;
 	
 	@Column
 	private String password;
@@ -43,13 +43,18 @@ public class UserInfoBean {
 	private long mobileNumber;
 	
 	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+	@Exclude
 	private List<OrderDetails> orders = new LinkedList<OrderDetails>();
+	
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+	@Exclude
+	private List<CartInfoBean> items = new LinkedList<CartInfoBean>();
 	
 	@OneToMany(cascade = CascadeType.ALL,mappedBy = "users")
 	@EqualsAndHashCode.Exclude
 	private List<ProductInfoBean> products = new ArrayList<ProductInfoBean>();
 	
-	@OneToMany(cascade = CascadeType.ALL,mappedBy = "userProducts")
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
 	private List<DealerProductInfoBean> dealersProds = new ArrayList<DealerProductInfoBean>();
 
 }

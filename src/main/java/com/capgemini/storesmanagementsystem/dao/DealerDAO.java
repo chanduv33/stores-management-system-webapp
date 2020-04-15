@@ -11,7 +11,8 @@ public interface DealerDAO {
 	public DealerProductInfoBean getProduct(int id);
 	public OrderDetails getPaymentDeatils(int orderId);
 	public boolean checkNameAvailability(String name) ;
-	public boolean setDeliveredDate(OrderDetails order);
 	public List<DealerProductInfoBean> getAllProducts(int userId);
 	public boolean setMinimumQuantity(DealerProductInfoBean dealer);
+	public List<ProductInfoBean>  getProducts();
+	public boolean update(DealerProductInfoBean dealer);
 }

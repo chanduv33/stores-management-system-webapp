@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
@@ -44,7 +43,24 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 	}
 
 	@Override
-	public OrderDetails getPaymentDetails(OrderDetails order) {
+	public List<OrderDetails> getPaymentDetails(int userId) {
+		EntityManager mgr = fact.createEntityManager();
+		try {
+			@SuppressWarnings("unchecked")
+			TypedQuery<OrderDetails> query = (TypedQuery<OrderDetails>) mgr.createNativeQuery("SELECT o.* FROM product_info d RIGHT OUTER JOIN orders_info o ON d.productId"
+					+ " = o.productId WHERE o.role='ROLE_DEALER' AND d.userId="+userId, OrderDetails.class);
+			List<OrderDetails> orders = query.getResultList();
+			if(orders != null) {
+				return orders;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			for (StackTraceElement ele : e.getStackTrace()) {
+				log.info(ele.toString());
+				return null;
+			}
+		}
 		return null;
 	}
 
@@ -59,10 +75,13 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 			if(itr.hasNext()) {
 				ProductInfoBean cameProd = itr.next();
 				ProductInfoBean product = new ProductInfoBean();
+				product.setManufacturerName(bean.getName());
 				product.setImageUrl(cameProd.getImageUrl());
 				product.setProductName(cameProd.getProductName());
 				product.setProductCost(cameProd.getProductCost());
-				product.setUserId(bean.getUserId());
+				product.setQuantity(cameProd.getQuantity());
+				product.setDescription(cameProd.getDescription());
+				product.setUsers(bean);
 				bean.getProducts().add(product);
 				mgr.persist(bean);
 			} else {
@@ -83,10 +102,9 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 	public List<ProductInfoBean> getAllProducts(int userId) {
 		EntityManager mgr = fact.createEntityManager();
 		try {
-				String jpql = "select m from ProductInfoBean m where m.userId=:mid";
-				TypedQuery<ProductInfoBean> query = mgr.createQuery(jpql, ProductInfoBean.class);
-				query.setParameter("mid", userId);
-				List<ProductInfoBean> beans = query.getResultList();
+			@SuppressWarnings("unchecked")
+			TypedQuery<ProductInfoBean> query = (TypedQuery<ProductInfoBean>)  mgr.createNativeQuery("select * from product_info where userId="+userId, ProductInfoBean.class);
+				List<ProductInfoBean> beans = (List<ProductInfoBean>)query.getResultList();
 				if (beans!=null) {
 					return beans;
 				} else {
@@ -111,6 +129,45 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 			setProd.setProductName(bean.getProductName());
 			setProd.setImageUrl(bean.getImageUrl());
 			mgr.persist(setProd);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			for (StackTraceElement ele : e.getStackTrace()) {
+				log.info(ele.toString());
+				return false;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeProduct(int productId) {
+		EntityManager mgr = fact.createEntityManager();
+		EntityTransaction tx = mgr.getTransaction();
+		try {
+			tx.begin();
+			ProductInfoBean bean = mgr.find(ProductInfoBean.class, productId);
+			mgr.remove(bean);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			for (StackTraceElement ele : e.getStackTrace()) {
+				log.info(ele.toString());
+				return false;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean changeStatus(OrderDetails order) {
+		EntityManager mgr = fact.createEntityManager();
+		EntityTransaction tx = mgr.getTransaction();
+		try {
+			tx.begin();
+			OrderDetails bean = mgr.find(OrderDetails.class, order.getOrderId());
+			bean.setStatus(order.getStatus());
+			mgr.persist(bean);
 			tx.commit();
 			return true;
 		} catch (Exception e) {

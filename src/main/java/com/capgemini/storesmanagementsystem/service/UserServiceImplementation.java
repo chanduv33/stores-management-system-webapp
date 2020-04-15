@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capgemini.storesmanagementsystem.dao.UserDAO;
+import com.capgemini.storesmanagementsystem.dto.CartInfoBean;
+import com.capgemini.storesmanagementsystem.dto.OrderDetails;
 import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
 
 @Service
@@ -19,13 +21,39 @@ public class UserServiceImplementation implements UserService {
 		return dao.register(user);
 	}
 
-	@Override
+	/*@Override
 	public UserInfoBean login(UserInfoBean user) {
 		return dao.login(user);
-	}
+	} */
 
 	@Override
 	public boolean update(UserInfoBean bean) {
 		return dao.update(bean);
+	}
+
+	@Override
+	public List<OrderDetails> getOrders(int userId) {
+		return dao.getOrders(userId);
+	}
+
+	@Override
+	public boolean setDeliveredDate(int orderId, String date) {
+		return dao.setDeliveredDate(orderId, date);
+	}
+
+	@Override
+	public boolean addToCart(UserInfoBean bean) {
+		
+		return dao.addToCart(bean);
+	}
+
+	@Override
+	public List<CartInfoBean> getCartItems(int userId) {
+		return dao.getCartItems(userId);
+	}
+
+	@Override
+	public boolean removeCartItem(int itemId) {
+		return dao.removeCartItem(itemId);
 	}
 }

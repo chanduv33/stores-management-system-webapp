@@ -1,5 +1,7 @@
 package com.capgemini.storesmanagementsystem.dao;
 
+import java.util.List;
+
 import com.capgemini.storesmanagementsystem.dto.*;
 
 
@@ -8,5 +10,5 @@ public interface CustomerDAO {
 	public OrderDetails getOrderDetails(int id);
 	public boolean checkEmailAvailability(String email);
 	public void autoBuy();
-	public boolean setDeliveredDate(OrderDetails order);
+	public List<DealerProductInfoBean> getProds();
 }

@@ -9,9 +9,11 @@ import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
 public interface ManufacturerService {
 	//public boolean checkNameAvailability(String name) ;
 	public boolean setCostPrice(ProductInfoBean bean);
-	public OrderDetails getPaymentDetails(OrderDetails order);
+	public List<OrderDetails> getPaymentDetails(int userId);
 	//public ManufacturerInfoBean login(ManufacturerInfoBean bean);
 	public boolean addProduct(UserInfoBean bean);
 	public List<ProductInfoBean> getAllProducts(int userId);
 	public boolean updateProduct(ProductInfoBean bean);
+	public boolean removeProduct(int productId);
+	public boolean changeStatus(OrderDetails order);
 }

@@ -11,22 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capgemini.storesmanagementsystem.dao.DealerDAO;
-import com.capgemini.storesmanagementsystem.dao.DealerDAOImpl;
 import com.capgemini.storesmanagementsystem.dto.DealerProductInfoBean;
 import com.capgemini.storesmanagementsystem.dto.OrderDetails;
+import com.capgemini.storesmanagementsystem.dto.ProductInfoBean;
 import com.capgemini.storesmanagementsystem.dto.ResponseClass;
 import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
 import com.capgemini.storesmanagementsystem.service.DealerService;
 
 @RestController
-@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*")
+@CrossOrigin(origins = "*",allowCredentials = "true",allowedHeaders = "*",exposedHeaders="Access-Control-Allow-Origin")
 public class DealerController {
 	
 	@Autowired
 	private DealerService service;
 	
-	@PostMapping(path = "dealerOrder",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/dealerOrder",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass placeOrder(@RequestBody UserInfoBean bean) {
 		ResponseClass resp = new ResponseClass();
 		OrderDetails order = service.placeOrder(bean);
@@ -38,13 +37,13 @@ public class DealerController {
 			return resp;
 		} else {
 			resp.setStatusCode(401);
-			resp.setMessage("Failed");
+			resp.setMessage("/Failed");
 			resp.setDescription("Placing Order Unsuccessfull");
 			return resp;
 		}
 	}
 	
-	@PostMapping(path = "setSellingPrice",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/setSellingPrice",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass setSellingPrice(@RequestBody DealerProductInfoBean bean) {
 		ResponseClass resp = new ResponseClass();
 		if(service.setSellingPrice(bean)) {
@@ -60,7 +59,7 @@ public class DealerController {
 		}
 	}
 	
-	@GetMapping(path = "getProds",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/getProds",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass getAllProducts(@RequestParam("userId")int userId) {
 		ResponseClass resp = new ResponseClass();
 		List<DealerProductInfoBean> prods = service.getAllProducts(userId);
@@ -78,7 +77,7 @@ public class DealerController {
 		}
 	}
 	
-	@GetMapping(path = "getProd",produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/getProd",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass getProduct(@RequestParam("dealersProductId")int dealersProductId) {
 		ResponseClass resp = new ResponseClass();
 		DealerProductInfoBean prod = service.getProduct(dealersProductId);
@@ -96,7 +95,7 @@ public class DealerController {
 		}
 	}
 	
-	@GetMapping(path = "getOrderDetails",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/getOrderDetails",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass getOrder(@RequestParam("orderId")int orderId ) {
 		ResponseClass resp = new ResponseClass();
 		OrderDetails order = service.getPaymentDeatils(orderId);
@@ -114,7 +113,7 @@ public class DealerController {
 		}
 	}
 	
-	@PostMapping(path = "setMin",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/setMin",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseClass setMinimumQuantity(@RequestBody DealerProductInfoBean bean) {
 		ResponseClass resp = new ResponseClass();
 		if(service.setMinimumQuantity(bean)) {
@@ -131,21 +130,37 @@ public class DealerController {
 	}
 	
 	
-	@PostMapping(path = "delivered",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseClass setDeliveredDate(@RequestBody OrderDetails bean) {
+	@GetMapping(path = "/getMansProds",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass getManufacturersProducts() {
 		ResponseClass resp = new ResponseClass();
-		if(service.setDeliveredDate(bean)) {
+		List<ProductInfoBean> products = service.getProducts();
+		if(products!=null) {
+			resp.setStatusCode(201);
+			resp.setMessage("Success");
+			resp.setDescription("Products Found");
+			resp.setProducts(products);
+			return resp;
+		} else {
+			resp.setStatusCode(401);
+			resp.setMessage("Failed");
+			resp.setDescription("Products Not Found");
+			return resp;
+		}
+	}
+	
+	@PostMapping(path = "/updateDealerProduct",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseClass update(@RequestBody DealerProductInfoBean bean) {
+		ResponseClass resp = new ResponseClass();
+		if(service.update(bean)) {
 			resp.setStatusCode(201);
 			resp.setMessage("Success");
 			resp.setDescription("Updation Successfull");
 			return resp;
 		} else {
 			resp.setStatusCode(401);
-			resp.setMessage("Failed");
-			resp.setDescription("Updation Product Failed");
+			resp.setMessage("/Failed");
+			resp.setDescription("Updation Unsuccessfull");
 			return resp;
 		}
 	}
-	
-	
 }

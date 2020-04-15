@@ -1,19 +1,19 @@
 package com.capgemini.storesmanagementsystem.dto;
 
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.ToString.Exclude;
 
 @Entity
 @Data
@@ -30,12 +30,13 @@ public class DealerProductInfoBean {
 	
 	@Column
 	private int quantity;
+
+	@Column
+	private int productId;
 	
 	@Column
 	private int minimumQuantity;
 	
-	@Column 
-	private int dealerId;
 	
 	@Column
 	private String imageUrl;
@@ -43,25 +44,16 @@ public class DealerProductInfoBean {
 	@Column
 	private String productName;
 	
+	
 	@Column
-	private int productId;
+	private String manufacturerName;
 	
 	@JsonIgnore
-	@MapsId("dealerId")
-	@ManyToOne(cascade = CascadeType.ALL)
-	//@JoinColumn(name = "dealerId",referencedColumnName = "userID")
-	//@JoinTable(name = "dealer_products",joinColumns = @JoinColumn(name="dealerId"),
-	//inverseJoinColumns = @JoinColumn(name="userId")  )
+	@ManyToOne
 	@JoinColumn(name="dealerId",referencedColumnName = "userId")
-	private UserInfoBean userProducts ;
+	@Exclude
+	private UserInfoBean user ;
 	
-	
-	@MapsId("productId")
-	@ManyToOne(cascade = CascadeType.ALL)
-	//@JoinColumn(name = "productId",referencedColumnName = "productId")
-	//@JoinTable(name = "product_dealer",joinColumns = @JoinColumn(name="productId"),
-	//inverseJoinColumns = @JoinColumn(name="productId")  )
-	@JoinColumn(name="productId",referencedColumnName = "productId")
-	private ProductInfoBean prod;
-	
+	@Transient
+	private ProductInfoBean product;
 }

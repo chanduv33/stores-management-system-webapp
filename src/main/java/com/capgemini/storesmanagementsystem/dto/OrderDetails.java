@@ -18,10 +18,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import lombok.Data;
+import lombok.ToString.Exclude;
 
 @SuppressWarnings("unused")
 @Entity
@@ -41,16 +49,33 @@ public class OrderDetails {
 	private double amount;
 	
 	@Column(nullable = false)
+	private String paymentType;
+	
+	@Column(nullable = false)
 	private int quantity;
 	
 	@Column
-	private String deliveredOn ;
+	private int productId;
+	
+	
 	
 	@Column
-	private String dateOfOrder;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+	private LocalDate deliveredOn ;
 	
 	@Column
-	private String dateOfDelivery;
+	@JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDate dateOfOrder;
+	
+	@Column
+	@JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDate dateOfDelivery;
 	
 	@Column(nullable = false)
 	private String productName;
@@ -58,23 +83,14 @@ public class OrderDetails {
 	@Column
 	private String status;
 	
-	@Column
-	private int userId;
-	
-	@Column
-	private int productId;
 	
 	@JsonIgnore
-	@MapsId("userId")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "userId",referencedColumnName = "userId")
+	@Exclude
 	private UserInfoBean user;
 	
-	@MapsId("productId")
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="productId",referencedColumnName = "productId")
-	private ProductInfoBean product ;
+	@Transient
+	private ProductInfoBean product;
 	
-	
-		
 }

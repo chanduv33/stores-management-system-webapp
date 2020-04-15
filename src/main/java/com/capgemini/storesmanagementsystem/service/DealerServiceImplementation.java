@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.capgemini.storesmanagementsystem.dao.DealerDAO;
 import com.capgemini.storesmanagementsystem.dto.DealerProductInfoBean;
 import com.capgemini.storesmanagementsystem.dto.OrderDetails;
+import com.capgemini.storesmanagementsystem.dto.ProductInfoBean;
 import com.capgemini.storesmanagementsystem.dto.UserInfoBean;
 
 @Service
@@ -32,10 +33,6 @@ public class DealerServiceImplementation implements DealerService {
 		return dao.getPaymentDeatils(id);
 	}
 
-	@Override
-	public boolean setDeliveredDate(OrderDetails order) {
-		return dao.setDeliveredDate(order);
-	}
 
 	@Override
 	public DealerProductInfoBean getProduct(int id) {
@@ -50,5 +47,15 @@ public class DealerServiceImplementation implements DealerService {
 	@Override
 	public boolean setMinimumQuantity(DealerProductInfoBean dealer) {
 		return dao.setMinimumQuantity(dealer);
+	}
+
+	@Override
+	public List<ProductInfoBean> getProducts() {
+		return dao.getProducts();
+	}
+
+	@Override
+	public boolean update(DealerProductInfoBean dealer) {
+		return dao.update(dealer);
 	}
 }
