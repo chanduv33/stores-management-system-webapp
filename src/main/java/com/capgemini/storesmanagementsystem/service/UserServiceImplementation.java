@@ -56,4 +56,9 @@ public class UserServiceImplementation implements UserService {
 	public boolean removeCartItem(int itemId) {
 		return dao.removeCartItem(itemId);
 	}
+	
+	@Override
+	public boolean changeStatus(OrderDetails order) {
+		return dao.changeStatus(order);
+	}
 }

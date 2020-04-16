@@ -50,12 +50,5 @@ public class ManufacturerServiceImplementation implements ManufacturerService {
 	public boolean removeProduct(int productId) {
 		return dao.removeProduct(productId);
 	}
-
-
-	@Override
-	public boolean changeStatus(OrderDetails order) {
-		return dao.changeStatus(order);
-	}
-
 	
 }

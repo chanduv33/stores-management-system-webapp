@@ -128,20 +128,4 @@ public class ManufacturerController {
 		}
 	}
 	
-	@PutMapping(path = "/changeStatus",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseClass changeStatus(@RequestBody OrderDetails bean) {
-		ResponseClass resp = new ResponseClass();
-		if(service.changeStatus(bean)) {
-			resp.setStatusCode(201);
-			resp.setMessage("Success");
-			resp.setDescription("Updation Successfull");
-			return resp;
-		} else {
-			resp.setStatusCode(401);
-			resp.setMessage("Failed");
-			resp.setDescription("Updation Product Failed");
-			return resp;
-		}
-	}
-	
 }

@@ -10,5 +10,4 @@ public interface ManufacturerDAO {
 	public List<ProductInfoBean> getAllProducts(int userId);
 	public boolean updateProduct(ProductInfoBean bean);
 	public boolean removeProduct(int productId);
-	public boolean changeStatus(OrderDetails order);
 }

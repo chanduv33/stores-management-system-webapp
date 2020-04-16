@@ -160,26 +160,5 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 		return false;
 	}
 
-	@Override
-	public boolean changeStatus(OrderDetails order) {
-		EntityManager mgr = fact.createEntityManager();
-		EntityTransaction tx = mgr.getTransaction();
-		try {
-			tx.begin();
-			OrderDetails bean = mgr.find(OrderDetails.class, order.getOrderId());
-			bean.setStatus(order.getStatus());
-			if(order.getStatus().equals("delivered")) {
-				bean.setDeliveredOn(LocalDate.now());
-			}
-			mgr.persist(bean);
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			for (StackTraceElement ele : e.getStackTrace()) {
-				log.info(ele.toString());
-				return false;
-			}
-		}
-		return false;
-	}
+	
 }

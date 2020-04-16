@@ -15,4 +15,5 @@ public interface UserService {
 	public boolean addToCart(UserInfoBean bean);
 	public List<CartInfoBean> getCartItems(int userId);
 	public boolean removeCartItem(int itemId);
+	public boolean changeStatus(OrderDetails order);
 }
