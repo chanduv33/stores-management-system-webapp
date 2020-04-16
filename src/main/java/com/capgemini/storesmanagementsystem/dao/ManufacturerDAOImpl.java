@@ -1,5 +1,6 @@
 package com.capgemini.storesmanagementsystem.dao;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 
@@ -167,6 +168,9 @@ public class ManufacturerDAOImpl implements ManufacturerDAO {
 			tx.begin();
 			OrderDetails bean = mgr.find(OrderDetails.class, order.getOrderId());
 			bean.setStatus(order.getStatus());
+			if(order.getStatus().equals("delivered")) {
+				bean.setDeliveredOn(LocalDate.now());
+			}
 			mgr.persist(bean);
 			tx.commit();
 			return true;
