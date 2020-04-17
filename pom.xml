@@ -122,7 +122,7 @@
 			  <groupId>com.spotify</groupId>
 			  <artifactId>docker-maven-plugin</artifactId>
 			  <configuration>
-			  <dockerHost>http://192.168.99.100:2376</dockerHost>
+			  <dockerHost>http://192.168.99.100:2375</dockerHost>
 				<imageName>008wearedm</imageName>
 				<baseImage>java:8</baseImage>
 				<entryPoint>["java", "-jar", "${project.build.finalName}.jar"]</entryPoint>
